@@ -168,7 +168,83 @@ class Start{
         echo '3. Promjena postojećih vrsta plaćanja' . PHP_EOL;
         echo '4. Brisanje postojećih vrsta plaćanja' . PHP_EOL;
         echo '5. Povratak na glavni izbornik' . PHP_EOL;
-        //$this->odabirOpcijePlacanje();
+        $this->odabirOpcijePlacanje();
+    }
+
+    private function odabirOpcijePlacanje(){
+        switch(Pomocno::rasponBroja('Odaberite opciju: ',1,5)){
+            case 1:
+                $this->pregledVrstaPlacanja();
+                break;
+            case 2:
+                $this->unosNoveVrstePlacanja();
+                break;
+            case 3:
+                if(count($this->placanje)===0){
+                    echo 'Nema unesenih vrsta plaćanja u aplikaciji' . PHP_EOL;
+                    $this->PlacanjeIzbornik();
+                }else{
+                    $this->promjenaVrstaPlacanja();
+                }
+                break;
+            case 4:
+                if(count($this->placanje)===0){
+                    echo 'Nema unesenih vrsta plaćanja u aplikaciji' . PHP_EOL;
+                    $this->PlacanjeIzbornik();
+                }else{
+                    $this->brisanjeVrstaPlacanja();
+                }
+                break;
+            case 5:
+                $this->glavniIzbornik();
+                break;
+            default:
+                $this->PlacanjeIzbornik();
+        }
+    }
+
+    private function pregledVrstaPlacanja($prikaziIzbornik=true){
+        echo '---------------' . PHP_EOL;
+        echo 'Popis vrsta plaćanja' . PHP_EOL;
+        $rb=1;
+        foreach($this->placanje as $s){
+            echo $rb++ . '. ' . $s->vrstaplacanja . PHP_EOL;
+        }
+        echo '---------------' . PHP_EOL;
+        if($prikaziIzbornik){
+            $this->PlacanjeIzbornik();
+        }
+    }
+
+    private function unosNoveVrstePlacanja(){
+        $s=new stdClass();
+        $s->vrstaplacanja=Pomocno::unosTeksta('Unesi novu vrstu plaćanja: ');
+        $this->placanje[]=$s;
+        $this->PlacanjeIzbornik();
+    }
+
+    private function promjenaVrstaPlacanja(){
+        $this->pregledVrstaPlacanja(false);
+        $rb=Pomocno::rasponBroja('Odaberite vrstu plaćanja: ',1,count($this->placanje));
+        $rb--;
+        $this->placanje[$rb]->vrstaplacanja=Pomocno::unosTeksta('Unesi naziv vrste plaćanja (' . $this->placanje[$rb]->vrstaplacanja . '): ', $this->placanje[$rb]->vrstaplacanja);
+        $this->PlacanjeIzbornik();
+    }
+
+    private function brisanjeVrstaPlacanja(){
+        $this->pregledVrstaPlacanja(false);
+        $rb=Pomocno::rasponBroja('Odaberite vrstu plaćanja: ',1,count($this->placanje));
+        $rb--;
+        if($this->dev){
+            echo 'Prije' . PHP_EOL;
+            print_r($this->placanje);
+        }
+        array_splice($this->placanje,$rb,1);
+        if($this->dev){
+            echo 'Poslije' . PHP_EOL;
+            print_r($this->placanje);
+        }
+        $this->PlacanjeIzbornik();
     }
 
 //Narudžba
@@ -207,6 +283,9 @@ class Start{
     private function testPodaci(){
         $this->kupac[]=$this->kreirajKupac('Renato','Jukić','rjukic@gmail.com');
         $this->kupac[]=$this->kreirajKupac('Franjo','Balen','fbalen@gmail.com');
+
+        $this->placanje[]=$this->kreirajVrstaPlacanja('Kartica');
+        $this->placanje[]=$this->kreirajVrstaPlacanja('Gotovina');
     }
 
     private function kreirajKupac($ime,$prezime,$email){
@@ -214,6 +293,12 @@ class Start{
         $o->ime=$ime;
         $o->prezime=$prezime;
         $o->email=$email;
+        return $o;
+    }
+
+    private function kreirajVrstaPlacanja($vrstaplacanja){
+        $o=new stdClass();
+        $o->vrstaplacanja=$vrstaplacanja;
         return $o;
     }
 
