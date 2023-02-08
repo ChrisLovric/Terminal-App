@@ -29,7 +29,17 @@ class Pomocno{
         }
     }
 
-
+    public static function unosDecimalnogBroja($poruka){
+        while(true){
+            $s=readline($poruka);
+            $s=(double)$s;
+            if($s<=0){
+                echo 'Broj mora biti veći od nule' . PHP_EOL;
+                continue;
+            }
+            return $s;
+        }
+    }
 
 
 }

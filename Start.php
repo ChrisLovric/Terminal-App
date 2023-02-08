@@ -350,7 +350,87 @@ class Start{
         echo '3. Promjena postojećeg proizvoda' . PHP_EOL;
         echo '4. Brisanje postojećeg proizvoda' . PHP_EOL;
         echo '5. Povratak na glavni izbornik' . PHP_EOL;
-        //$this->odabirOpcijeProizvod();
+        $this->odabirOpcijeProizvod();
+    }
+
+    private function odabirOpcijeProizvod(){
+        switch(Pomocno::rasponBroja('Odaberite opciju: ',1,5)){
+            case 1:
+                $this->pregledProizvoda();
+                break;
+            case 2:
+                $this->unosNovogProizvoda();
+                break;
+            case 3:
+                if(count($this->proizvod)===0){
+                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    $this->ProizvodIzbornik();
+                }else{
+                    $this->promjenaProizvoda();
+                }
+                break;
+            case 4:
+                if(count($this->proizvod)===0){
+                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    $this->ProizvodIzbornik();
+                }else{
+                    $this->brisanjeProizvoda();
+                }
+                break;
+            case 5:
+                $this->glavniIzbornik();
+                break;
+            default:
+                $this->ProizvodIzbornik();
+        }
+    }
+
+    private function pregledProizvoda($prikaziIzbornik=true){
+        echo '---------------' . PHP_EOL;
+        echo 'Proizvodi' . PHP_EOL;
+        $rb=1;
+        foreach($this->proizvod as $s){
+            echo $rb++ . '. ' . PHP_EOL . 'Naziv proizvoda: ' . $s->naziv . PHP_EOL . 'Proizvođač: ' . $s->proizvodjac . PHP_EOL . 'Jedinična cijena: ' . $s->jedinicnacijena . PHP_EOL;
+        }
+        echo '---------------' . PHP_EOL;
+        if($prikaziIzbornik){
+            $this->ProizvodIzbornik();
+        }
+    }
+
+    private function unosNovogProizvoda(){
+        $s=new stdClass();
+        $s->naziv=Pomocno::unosTeksta('Unesi naziv proizvoda: ');
+        $s->proizvodjac=Pomocno::unosTeksta('Unesi proizvođača: ');
+        $s->jedinicnacijena=Pomocno::unosDecimalnogBroja('Unesi jediničnu cijenu: ');
+        $this->proizvod[]=$s;
+        $this->ProizvodIzbornik();
+    }
+
+    private function promjenaProizvoda(){
+        $this->pregledProizvoda(false);
+        $rb=Pomocno::rasponBroja('Odaberite proizvod: ',1,count($this->proizvod));
+        $rb--;
+        $this->proizvod[$rb]->naziv=Pomocno::unosTeksta('Unesi naziv proizvoda (' . $this->proizvod[$rb]->naziv . '): ', $this->proizvod[$rb]->naziv);
+        $this->proizvod[$rb]->proizvodjac=Pomocno::unosTeksta('Unesi proizvođača (' . $this->proizvod[$rb]->proizvodjac . '): ', $this->proizvod[$rb]->proizvodjac);
+        $this->proizvod[$rb]->jedinicnacijena=Pomocno::unosDecimalnogBroja('Unesi jediničnu cijenu (' . $this->proizvod[$rb]->jedinicnacijena . '): ', $this->proizvod[$rb]->jedinicnacijena);
+        $this->ProizvodIzbornik();
+    }
+
+    private function brisanjeProizvoda(){
+        $this->pregledProizvoda(false);
+        $rb=Pomocno::rasponBroja('Odaberite proizvod: ',1,count($this->proizvod));
+        $rb--;
+        if($this->dev){
+            echo 'Prije' . PHP_EOL;
+            print_r($this->proizvod);
+        }
+        array_splice($this->proizvod,$rb,1);
+        if($this->dev){
+            echo 'Poslije' . PHP_EOL;
+            print_r($this->proizvod);
+        }
+        $this->ProizvodIzbornik();
     }
 
 //Detalji narudžbe
@@ -374,6 +454,9 @@ class Start{
         $this->narudzba[]=$this->kreirajNarudzba('123','30.11.2022. 15:24:36','04.12.2022. 08:14:44','30.11.2022. 15:26:36');
         $this->narudzba[]=$this->kreirajNarudzba('124','05.12.2022. 08:11:52','08.12.2022. 09:45:12','05.12.2022. 08:13:47');
 
+        $this->proizvod[]=$this->kreirajProizvod('Grafička kartica GeForce RTX 3060 Ghost LHR, 12GB GDDR6','Gainward',464.99);
+        $this->proizvod[]=$this->kreirajProizvod('Grafička kartica Radeon RX6800XT Gaming OC, 16GB GDDR6','Gigabyte',1499.99);
+
     }
 
     private function kreirajKupac($ime,$prezime,$email){
@@ -396,6 +479,14 @@ class Start{
         $o->datumnarudzbe=$datumnarudzbe;
         $o->datumisporuke=$datumisporuke;
         $o->datumplacanja=$datumplacanja;
+        return $o;
+    }
+
+    private function kreirajProizvod($naziv,$proizvodjac,$jedinicnacijena){
+        $o=new stdClass();
+        $o->naziv=$naziv;
+        $o->proizvodjac=$proizvodjac;
+        $o->jedinicnacijena=$jedinicnacijena;
         return $o;
     }
 
