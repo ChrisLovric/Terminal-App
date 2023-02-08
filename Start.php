@@ -58,7 +58,7 @@ class Start{
                 $this->ProizvodIzbornik();
                 break;
             case 5:
-                $this->DetaljiNarudzbe();
+                $this->DetaljiNarudzbeIzbornik();
                 break;
             case 6:
                 echo 'Vidimo se opet!' . PHP_EOL;
@@ -305,7 +305,7 @@ class Start{
 
     private function unosNoveNarudzbe(){
         $s=new stdClass();
-        $s->brojnarudzbe=Pomocno::unosTeksta('Unesi broj narudžbe: ');
+        $s->brojnarudzbe=Pomocno::unosBroja('Unesi broj narudžbe: ');
         $s->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe: ');
         $s->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke: ');
         $s->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja: ');
@@ -317,7 +317,7 @@ class Start{
         $this->pregledNarudzbi(false);
         $rb=Pomocno::rasponBroja('Odaberite narudžbu: ',1,count($this->narudzba));
         $rb--;
-        $this->narudzba[$rb]->brojnarudzbe=Pomocno::unosTeksta('Unesi broj narudžbe (' . $this->narudzba[$rb]->brojnarudzbe . '): ', $this->narudzba[$rb]->brojnarudzbe);
+        $this->narudzba[$rb]->brojnarudzbe=Pomocno::unosBroja('Unesi broj narudžbe (' . $this->narudzba[$rb]->brojnarudzbe . '): ', $this->narudzba[$rb]->brojnarudzbe);
         $this->narudzba[$rb]->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe (' . $this->narudzba[$rb]->datumnarudzbe . '): ', $this->narudzba[$rb]->datumnarudzbe);
         $this->narudzba[$rb]->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumisporuke . '): ', $this->narudzba[$rb]->datumisporuke);
         $this->narudzba[$rb]->datumplacanja=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumplacanja . '): ', $this->narudzba[$rb]->datumplacanja);
@@ -363,7 +363,7 @@ class Start{
                 break;
             case 3:
                 if(count($this->proizvod)===0){
-                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    echo 'Nema proizvoda u aplikaciji' . PHP_EOL;
                     $this->ProizvodIzbornik();
                 }else{
                     $this->promjenaProizvoda();
@@ -371,7 +371,7 @@ class Start{
                 break;
             case 4:
                 if(count($this->proizvod)===0){
-                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    echo 'Nema proizvoda u aplikaciji' . PHP_EOL;
                     $this->ProizvodIzbornik();
                 }else{
                     $this->brisanjeProizvoda();
@@ -434,14 +434,94 @@ class Start{
     }
 
 //Detalji narudžbe
-    private function DetaljiNarudzbe(){
+    private function DetaljiNarudzbeIzbornik(){
         echo 'Detalji narudžbe' . PHP_EOL;
         echo '1. Detalji narudžbe' . PHP_EOL;
         echo '2. Unos novih detalja narudžbe' . PHP_EOL;
         echo '3. Promjena postojećih detalja narudžbe' . PHP_EOL;
         echo '4. Brisanje postojećih detalja narudžbe' . PHP_EOL;
         echo '5. Povratak na glavni izbornik' . PHP_EOL;
-        //$this->odabirOpcijeDetaljiNarudzbe();
+        $this->odabirOpcijeDetaljiNarudzbe();
+    }
+
+    private function odabirOpcijeDetaljiNarudzbe(){
+        switch(Pomocno::rasponBroja('Odaberite opciju: ',1,5)){
+            case 1:
+                $this->pregledDetalja();
+                break;
+            case 2:
+                $this->unosNovihDetalja();
+                break;
+            case 3:
+                if(count($this->detaljinarudzbe)===0){
+                    echo 'Nema detalja narudžbi u aplikaciji' . PHP_EOL;
+                    $this->DetaljiNarudzbeIzbornik();
+                }else{
+                    $this->promjenaDetalja();
+                }
+                break;
+            case 4:
+                if(count($this->detaljinarudzbe)===0){
+                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    $this->DetaljiNarudzbeIzbornik();
+                }else{
+                    $this->brisanjeDetalja();
+                }
+                break;
+            case 5:
+                $this->glavniIzbornik();
+                break;
+            default:
+                $this->DetaljiNarudzbeIzbornik();
+        }
+    }
+
+    private function pregledDetalja($prikaziIzbornik=true){
+        echo '---------------' . PHP_EOL;
+        echo 'Detalji narudžbe' . PHP_EOL;
+        $rb=1;
+        foreach($this->detaljinarudzbe as $s){
+            echo $rb++ . '. ' . PHP_EOL . 'Cijena: ' . $s->cijena . PHP_EOL . 'Količina: ' . $s->kolicina . PHP_EOL . 'Popust: ' . $s->popust . PHP_EOL;
+        }
+        echo '---------------' . PHP_EOL;
+        if($prikaziIzbornik){
+            $this->DetaljiNarudzbeIzbornik();
+        }
+    }
+
+    private function unosNovihDetalja(){
+        $s=new stdClass();
+        $s->cijena=Pomocno::unosDecimalnogBroja('Unesi cijenu: ');
+        $s->kolicina=Pomocno::unosBroja('Unesi količinu naručenih proizvoda: ');
+        $s->popust=Pomocno::unosDecimalnogBroja('Unesi popust: ');
+        $this->detaljinarudzbe[]=$s;
+        $this->DetaljiNarudzbeIzbornik();
+    }
+
+    private function promjenaDetalja(){
+        $this->pregledDetalja(false);
+        $rb=Pomocno::rasponBroja('Odaberite detalje narudžbe: ',1,count($this->detaljinarudzbe));
+        $rb--;
+        $this->detaljinarudzbe[$rb]->cijena=Pomocno::unosDecimalnogBroja('Unesi cijenu (' . $this->detaljinarudzbe[$rb]->cijena . '): ', $this->detaljinarudzbe[$rb]->cijena);
+        $this->detaljinarudzbe[$rb]->kolicina=Pomocno::unosBroja('Unesi količinu naručenih proizvoda (' . $this->detaljinarudzbe[$rb]->kolicina . '): ', $this->detaljinarudzbe[$rb]->kolicina);
+        $this->detaljinarudzbe[$rb]->popust=Pomocno::unosDecimalnogBroja('Unesi popust (' . $this->detaljinarudzbe[$rb]->popust . '): ', $this->detaljinarudzbe[$rb]->popust);
+        $this->DetaljiNarudzbeIzbornik();
+    }
+
+    private function brisanjeDetalja(){
+        $this->pregledDetalja(false);
+        $rb=Pomocno::rasponBroja('Odaberite detalje narudžbe: ',1,count($this->detaljinarudzbe));
+        $rb--;
+        if($this->dev){
+            echo 'Prije' . PHP_EOL;
+            print_r($this->detaljinarudzbe);
+        }
+        array_splice($this->detaljinarudzbe,$rb,1);
+        if($this->dev){
+            echo 'Poslije' . PHP_EOL;
+            print_r($this->detaljinarudzbe);
+        }
+        $this->DetaljiNarudzbeIzbornik();
     }
 
     private function testPodaci(){
@@ -456,6 +536,9 @@ class Start{
 
         $this->proizvod[]=$this->kreirajProizvod('Grafička kartica GeForce RTX 3060 Ghost LHR, 12GB GDDR6','Gainward',464.99);
         $this->proizvod[]=$this->kreirajProizvod('Grafička kartica Radeon RX6800XT Gaming OC, 16GB GDDR6','Gigabyte',1499.99);
+
+        $this->detaljinarudzbe[]=$this->kreirajDetalje(464.99,'1',0.00,'123','Grafička kartica GeForce RTX 3060 Ghost LHR, 12GB GDDR6');
+        $this->detaljinarudzbe[]=$this->kreirajDetalje(1499.99,'2',100.00,'124','Grafička kartica Radeon RX6800XT Gaming OC, 16GB GDDR6');
 
     }
 
@@ -487,6 +570,16 @@ class Start{
         $o->naziv=$naziv;
         $o->proizvodjac=$proizvodjac;
         $o->jedinicnacijena=$jedinicnacijena;
+        return $o;
+    }
+
+    private function kreirajDetalje($cijena,$kolicina,$popust,$brojnarudzbe,$proizvod){
+        $o=new stdClass();
+        $o->cijena=$cijena;
+        $o->kolicina=$kolicina;
+        $o->popust=$popust;
+        $o->brojnarudzbe=$brojnarudzbe;
+        $o->proizvod=$proizvod;
         return $o;
     }
 

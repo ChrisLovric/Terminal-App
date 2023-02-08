@@ -41,5 +41,17 @@ class Pomocno{
         }
     }
 
+    public static function unosBroja($poruka){
+        while(true){
+            $s=readline($poruka);
+            $s=(int)$s;
+            if($s<=0){
+                echo 'Broj mora biti veći od nule' . PHP_EOL;
+                continue;
+            }
+            return $s;
+        }
+    }
+
 
 }
