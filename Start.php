@@ -255,8 +255,92 @@ class Start{
         echo '3. Promjena postojećih narudžbi' . PHP_EOL;
         echo '4. Brisanje postojećih narudžbi' . PHP_EOL;
         echo '5. Povratak na glavni izbornik' . PHP_EOL;
-        //$this->odabirOpcijeNarudzba();
+        $this->odabirOpcijeNarudzba();
     }
+
+    private function odabirOpcijeNarudzba(){
+        switch(Pomocno::rasponBroja('Odaberite opciju: ',1,5)){
+            case 1:
+                $this->pregledNarudzbi();
+                break;
+            case 2:
+                $this->unosNoveNarudzbe();
+                break;
+            case 3:
+                if(count($this->narudzba)===0){
+                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    $this->NarudzbaIzbornik();
+                }else{
+                    $this->promjenaNarudzbe();
+                }
+                break;
+            case 4:
+                if(count($this->narudzba)===0){
+                    echo 'Nema narudžbi u aplikaciji' . PHP_EOL;
+                    $this->NarudzbaIzbornik();
+                }else{
+                    $this->brisanjeNarudzbe();
+                }
+                break;
+            case 5:
+                $this->glavniIzbornik();
+                break;
+            default:
+                $this->NarudzbaIzbornik();
+        }
+    }
+
+    private function pregledNarudzbi($prikaziIzbornik=true){
+        echo '---------------' . PHP_EOL;
+        echo 'Sve narudžbe' . PHP_EOL;
+        $rb=1;
+        foreach($this->narudzba as $s){
+            echo $rb++ . '. ' . PHP_EOL . 'Broj narudžbe: ' . $s->brojnarudzbe . PHP_EOL . 'Datum Narudžbe: ' . $s->datumnarudzbe . PHP_EOL . 'Datum isporuke: ' . $s->datumisporuke . PHP_EOL . 'Datum plaćanja: ' . $s->datumplacanja . PHP_EOL;
+        }
+        echo '---------------' . PHP_EOL;
+        if($prikaziIzbornik){
+            $this->NarudzbaIzbornik();
+        }
+    }
+
+    private function unosNoveNarudzbe(){
+        $s=new stdClass();
+        $s->brojnarudzbe=Pomocno::unosTeksta('Unesi broj narudžbe: ');
+        $s->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe: ');
+        $s->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke: ');
+        $s->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja: ');
+        $this->narudzba[]=$s;
+        $this->NarudzbaIzbornik();
+    }
+
+    private function promjenaNarudzbe(){
+        $this->pregledNarudzbi(false);
+        $rb=Pomocno::rasponBroja('Odaberite narudžbu: ',1,count($this->narudzba));
+        $rb--;
+        $this->narudzba[$rb]->brojnarudzbe=Pomocno::unosTeksta('Unesi broj narudžbe (' . $this->narudzba[$rb]->brojnarudzbe . '): ', $this->narudzba[$rb]->brojnarudzbe);
+        $this->narudzba[$rb]->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe (' . $this->narudzba[$rb]->datumnarudzbe . '): ', $this->narudzba[$rb]->datumnarudzbe);
+        $this->narudzba[$rb]->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumisporuke . '): ', $this->narudzba[$rb]->datumisporuke);
+        $this->narudzba[$rb]->datumplacanja=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumplacanja . '): ', $this->narudzba[$rb]->datumplacanja);
+        $this->NarudzbaIzbornik();
+    }
+
+    private function brisanjeNarudzbe(){
+        $this->pregledNarudzbi(false);
+        $rb=Pomocno::rasponBroja('Odaberite kupca: ',1,count($this->narudzba));
+        $rb--;
+        if($this->dev){
+            echo 'Prije' . PHP_EOL;
+            print_r($this->narudzba);
+        }
+        array_splice($this->narudzba,$rb,1);
+        if($this->dev){
+            echo 'Poslije' . PHP_EOL;
+            print_r($this->narudzba);
+        }
+        $this->NarudzbaIzbornik();
+    }
+
+
 
 //Proizvod
     private function ProizvodIzbornik(){
@@ -286,6 +370,10 @@ class Start{
 
         $this->placanje[]=$this->kreirajVrstaPlacanja('Kartica');
         $this->placanje[]=$this->kreirajVrstaPlacanja('Gotovina');
+
+        $this->narudzba[]=$this->kreirajNarudzba('123','30.11.2022. 15:24:36','04.12.2022. 08:14:44','30.11.2022. 15:26:36');
+        $this->narudzba[]=$this->kreirajNarudzba('124','05.12.2022. 08:11:52','08.12.2022. 09:45:12','05.12.2022. 08:13:47');
+
     }
 
     private function kreirajKupac($ime,$prezime,$email){
@@ -299,6 +387,15 @@ class Start{
     private function kreirajVrstaPlacanja($vrstaplacanja){
         $o=new stdClass();
         $o->vrstaplacanja=$vrstaplacanja;
+        return $o;
+    }
+
+    private function kreirajNarudzba($brojnarudzbe,$datumnarudzbe,$datumisporuke,$datumplacanja){
+        $o=new stdClass();
+        $o->brojnarudzbe=$brojnarudzbe;
+        $o->datumnarudzbe=$datumnarudzbe;
+        $o->datumisporuke=$datumisporuke;
+        $o->datumplacanja=$datumplacanja;
         return $o;
     }
 
