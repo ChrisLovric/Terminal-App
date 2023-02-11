@@ -33,7 +33,9 @@ class Start{
     }
 
     private function glavniIzbornik(){
+        echo '__________________________' . PHP_EOL;
         echo 'Glavni izbornik' . PHP_EOL;
+        echo '__________________________' . PHP_EOL;
         echo '1. Kupac' . PHP_EOL;
         echo '2. Plaćanje' . PHP_EOL;
         echo '3. Narudžba' . PHP_EOL;
@@ -70,7 +72,9 @@ class Start{
 
 //Kupac
     private function KupacIzbornik(){
+        echo '__________________________' . PHP_EOL;
         echo 'Kupac' . PHP_EOL;
+        echo '__________________________' . PHP_EOL;
         echo '1. Pregled kupaca' . PHP_EOL;
         echo '2. Unos novog kupca' . PHP_EOL;
         echo '3. Promjena postojećeg kupca' . PHP_EOL;
@@ -162,7 +166,9 @@ class Start{
 
 //Plaćanje
     private function PlacanjeIzbornik(){
+        echo '__________________________' . PHP_EOL;
         echo 'Plaćanje' . PHP_EOL;
+        echo '__________________________' . PHP_EOL;
         echo '1. Vrsta plaćanja' . PHP_EOL;
         echo '2. Unos nove vrste plaćanja' . PHP_EOL;
         echo '3. Promjena postojećih vrsta plaćanja' . PHP_EOL;
@@ -249,7 +255,9 @@ class Start{
 
 //Narudžba
     private function NarudzbaIzbornik(){
+        echo '__________________________' . PHP_EOL;
         echo 'Narudžba' . PHP_EOL;
+        echo '__________________________' . PHP_EOL;
         echo '1. Pregled narudžbi' . PHP_EOL;
         echo '2. Unos nove narudžbe' . PHP_EOL;
         echo '3. Promjena postojećih narudžbi' . PHP_EOL;
@@ -306,9 +314,9 @@ class Start{
     private function unosNoveNarudzbe(){
         $s=new stdClass();
         $s->brojnarudzbe=Pomocno::unosBroja('Unesi broj narudžbe: ');
-        $s->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe: ');
-        $s->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke: ');
-        $s->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja: ');
+        $s->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe u formatu dd:mm:YYYY hh:mm:ss: ');
+        $s->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke u formatu dd:mm:YYYY hh:mm:ss: ');
+        $s->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja u formatu dd:mm:YYYY hh:mm:ss: ');
         $this->narudzba[]=$s;
         $this->NarudzbaIzbornik();
     }
@@ -344,7 +352,9 @@ class Start{
 
 //Proizvod
     private function ProizvodIzbornik(){
+        echo '__________________________' . PHP_EOL;
         echo 'Proizvod' . PHP_EOL;
+        echo '__________________________' . PHP_EOL;
         echo '1. Pregled proizvoda' . PHP_EOL;
         echo '2. Unos novog proizvoda' . PHP_EOL;
         echo '3. Promjena postojećeg proizvoda' . PHP_EOL;
@@ -435,7 +445,9 @@ class Start{
 
 //Detalji narudžbe
     private function DetaljiNarudzbeIzbornik(){
+        echo '__________________________' . PHP_EOL;
         echo 'Detalji narudžbe' . PHP_EOL;
+        echo '__________________________' . PHP_EOL;
         echo '1. Detalji narudžbe' . PHP_EOL;
         echo '2. Unos novih detalja narudžbe' . PHP_EOL;
         echo '3. Promjena postojećih detalja narudžbe' . PHP_EOL;
