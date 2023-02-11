@@ -320,7 +320,7 @@ class Start{
         $this->narudzba[$rb]->brojnarudzbe=Pomocno::unosBroja('Unesi broj narudžbe (' . $this->narudzba[$rb]->brojnarudzbe . '): ', $this->narudzba[$rb]->brojnarudzbe);
         $this->narudzba[$rb]->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe (' . $this->narudzba[$rb]->datumnarudzbe . '): ', $this->narudzba[$rb]->datumnarudzbe);
         $this->narudzba[$rb]->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumisporuke . '): ', $this->narudzba[$rb]->datumisporuke);
-        $this->narudzba[$rb]->datumplacanja=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumplacanja . '): ', $this->narudzba[$rb]->datumplacanja);
+        $this->narudzba[$rb]->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja (' . $this->narudzba[$rb]->datumplacanja . '): ', $this->narudzba[$rb]->datumplacanja);
         $this->NarudzbaIzbornik();
     }
 
