@@ -330,7 +330,7 @@ class Start{
 
         $s->kupac=[];
         $this->pregledKupaca(false);
-        $rb = Pomocno::rasponBroja('Odaberite polaznika: ',1,count($this->kupac));
+        $rb = Pomocno::rasponBroja('Odaberite kupca: ',1,count($this->kupac));
         $rb--;
         $s->kupac[] = $this->kupac[$rb];
         
@@ -541,7 +541,14 @@ class Start{
         $rb=1;
         foreach($this->detaljinarudzbe as $s){
             echo $rb++ . '. ' . PHP_EOL . 'Cijena: ' . $s->cijena . PHP_EOL . 'Količina: ' . $s->kolicina . PHP_EOL . 'Popust: ' . $s->popust . PHP_EOL;
+            foreach($s->narudzba as $n){
+                echo 'Broj narudžbe: ' . $n->brojnarudzbe . PHP_EOL;
+            }
+            foreach($s->proizvod as $p){
+                echo 'Proizvod: ' . $p->naziv . PHP_EOL;
+            }
         }
+
         echo '---------------' . PHP_EOL;
         if($prikaziIzbornik){
             $this->DetaljiNarudzbeIzbornik();
@@ -553,6 +560,19 @@ class Start{
         $s->cijena=Pomocno::unosDecimalnogBroja('Unesi cijenu: ');
         $s->kolicina=Pomocno::unosBroja('Unesi količinu naručenih proizvoda: ');
         $s->popust=Pomocno::unosDecimalnogBroja('Unesi popust: ');
+
+        $s->narudzba=[];
+        $this->pregledNarudzbi(false);
+        $rb = Pomocno::rasponBroja('Odaberite narudžbu: ',1,count($this->narudzba));
+        $rb--;
+        $s->narudzba[] = $this->narudzba[$rb];
+        
+        $s->proizvod=[];
+        $this->pregledProizvoda(false);
+        $rb = Pomocno::rasponBroja('Odaberite proizvod: ',1,count($this->proizvod));
+        $rb--;
+        $s->proizvod[] = $this->proizvod[$rb];
+
         $this->detaljinarudzbe[]=$s;
         $this->DetaljiNarudzbeIzbornik();
     }
@@ -564,6 +584,17 @@ class Start{
         $this->detaljinarudzbe[$rb]->cijena=Pomocno::unosDecimalnogBroja('Unesi cijenu (' . $this->detaljinarudzbe[$rb]->cijena . '): ', $this->detaljinarudzbe[$rb]->cijena);
         $this->detaljinarudzbe[$rb]->kolicina=Pomocno::unosBroja('Unesi količinu naručenih proizvoda (' . $this->detaljinarudzbe[$rb]->kolicina . '): ', $this->detaljinarudzbe[$rb]->kolicina);
         $this->detaljinarudzbe[$rb]->popust=Pomocno::unosDecimalnogBroja('Unesi popust (' . $this->detaljinarudzbe[$rb]->popust . '): ', $this->detaljinarudzbe[$rb]->popust);
+
+        $this->pregledNarudzbi(false);
+        $rbn=Pomocno::rasponBroja('Odaberite narudžbu: ',1,count($this->narudzba));
+        $rbn--;
+        $this->detaljinarudzbe[$rb]->brojnarudzbe=$this->narudzba[$rbn];
+
+        $this->pregledProizvoda(false);
+        $rbpl=Pomocno::rasponBroja('Odaberite proizvod: ',1,count($this->placanje));
+        $rbpl--;
+        $this->detaljinarudzbe[$rb]->vrstaplacanja=$this->placanje[$rbpl];
+
         $this->DetaljiNarudzbeIzbornik();
     }
 
