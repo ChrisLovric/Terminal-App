@@ -120,8 +120,8 @@ class Start{
         echo '---------------' . PHP_EOL;
         echo 'Popis kupaca' . PHP_EOL;
         $rb=1;
-        foreach($this->kupac as $s){
-            echo $rb++ . '. ' . $s->ime . ' ' . $s->prezime . PHP_EOL . $s->email . PHP_EOL;
+        foreach($this->kupac as $kupci){
+            echo $rb++ . '. ' . $kupci->ime . ' ' . $kupci->prezime . PHP_EOL . $kupci->email . PHP_EOL;
         }
         echo '---------------' . PHP_EOL;
         if($prikaziIzbornik){
@@ -130,11 +130,11 @@ class Start{
     }
 
     private function unosNovogKupca(){
-        $s=new stdClass();
-        $s->ime=Pomocno::unosTeksta('Unesi ime kupca: ');
-        $s->prezime=Pomocno::unosTeksta('Unesi prezime kupca: ');
-        $s->email=Pomocno::unosTeksta('Unesi email adresu kupca: ');
-        $this->kupac[]=$s;
+        $k=new stdClass();
+        $k->ime=Pomocno::unosTeksta('Unesi ime kupca: ');
+        $k->prezime=Pomocno::unosTeksta('Unesi prezime kupca: ');
+        $k->email=Pomocno::unosTeksta('Unesi email adresu kupca: ');
+        $this->kupac[]=$k;
         $this->KupacIzbornik();
     }
 
@@ -301,9 +301,19 @@ class Start{
     private function pregledNarudzbi($prikaziIzbornik=true){
         echo '---------------' . PHP_EOL;
         echo 'Sve narudžbe' . PHP_EOL;
+        echo '---------------' . PHP_EOL;
+        if(count($this->narudzba)===0){
+            echo 'Nema narudžbi u aplikaciji' . PHP_EOL . 'Za dodavanje narudžbe koristite opciju 2. Unos nove narudžbe' . PHP_EOL;
+        }
         $rb=1;
-        foreach($this->narudzba as $s){
-            echo $rb++ . '. ' . PHP_EOL . 'Broj narudžbe: ' . $s->brojnarudzbe . PHP_EOL . 'Datum Narudžbe: ' . $s->datumnarudzbe . PHP_EOL . 'Datum isporuke: ' . $s->datumisporuke . PHP_EOL . 'Datum plaćanja: ' . $s->datumplacanja . PHP_EOL;
+        foreach($this->narudzba as $v){
+            echo $rb++ . '. ' . PHP_EOL . 'Broj narudžbe: ' . $v->brojnarudzbe . PHP_EOL . 'Datum narudžbe: ' . $v->datumnarudzbe . PHP_EOL . 'Datum isporuke: ' . $v->datumisporuke . PHP_EOL . 'Datum plaćanja: ' . $v->datumplacanja . PHP_EOL;
+            foreach($v->kupac as $k){
+                echo 'Kupac: ' . $k->ime . ' ' . $k->prezime . PHP_EOL;
+            }
+            foreach($v->placanje as $s){
+                echo 'Vrsta plaćanja: ' . $s->vrstaplacanja . PHP_EOL;
+            }
         }
         echo '---------------' . PHP_EOL;
         if($prikaziIzbornik){
@@ -311,12 +321,28 @@ class Start{
         }
     }
 
-    private function unosNoveNarudzbe(){
+    private function unosNoveNarudzbe(){    
         $s=new stdClass();
         $s->brojnarudzbe=Pomocno::unosBroja('Unesi broj narudžbe: ');
         $s->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe u formatu dd:mm:YYYY hh:mm:ss: ');
         $s->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke u formatu dd:mm:YYYY hh:mm:ss: ');
         $s->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja u formatu dd:mm:YYYY hh:mm:ss: ');
+
+        $s->kupac=[];
+        $this->pregledKupaca(false);
+        $rb = Pomocno::rasponBroja('Odaberite polaznika: ',1,count($this->kupac));
+        $rb--;
+        $s->kupac[] = $this->kupac[$rb];
+        
+        $s->placanje=[];
+        $this->pregledVrstaPlacanja(false);
+        $rb = Pomocno::rasponBroja('Odaberite vrstu plaćanja: ',1,count($this->placanje));
+        $rb--;
+        $s->placanje[] = $this->placanje[$rb];
+
+        echo '===============';
+        echo 'Narudžba dodana';
+        echo '===============' . PHP_EOL;
         $this->narudzba[]=$s;
         $this->NarudzbaIzbornik();
     }
@@ -329,12 +355,28 @@ class Start{
         $this->narudzba[$rb]->datumnarudzbe=Pomocno::unosTeksta('Unesi datum narudžbe (' . $this->narudzba[$rb]->datumnarudzbe . '): ', $this->narudzba[$rb]->datumnarudzbe);
         $this->narudzba[$rb]->datumisporuke=Pomocno::unosTeksta('Unesi datum isporuke (' . $this->narudzba[$rb]->datumisporuke . '): ', $this->narudzba[$rb]->datumisporuke);
         $this->narudzba[$rb]->datumplacanja=Pomocno::unosTeksta('Unesi datum plaćanja (' . $this->narudzba[$rb]->datumplacanja . '): ', $this->narudzba[$rb]->datumplacanja);
+
+        $this->pregledKupaca(false);
+        $rbk=Pomocno::rasponBroja('Odaberite kupca: ',1,count($this->kupac));
+        $rbk--;
+        $this->narudzba[$rb]->kupci=$this->kupac[$rbk];
+
+        $this->pregledVrstaPlacanja(false);
+        $rbpl=Pomocno::rasponBroja('Odaberite vrstu plaćanja: ',1,count($this->placanje));
+        $rbpl--;
+        $this->narudzba[$rb]->vrstaplacanja=$this->placanje[$rbpl];
+
+        echo '===============';
+        echo 'Narudžba izmijenjena';
+        echo '===============' . PHP_EOL;
+
         $this->NarudzbaIzbornik();
-    }
+    
+}
 
     private function brisanjeNarudzbe(){
         $this->pregledNarudzbi(false);
-        $rb=Pomocno::rasponBroja('Odaberite kupca: ',1,count($this->narudzba));
+        $rb=Pomocno::rasponBroja('Odaberite narudžbu: ',1,count($this->narudzba));
         $rb--;
         if($this->dev){
             echo 'Prije' . PHP_EOL;
@@ -345,6 +387,11 @@ class Start{
             echo 'Poslije' . PHP_EOL;
             print_r($this->narudzba);
         }
+
+        echo '===============';
+        echo 'Narudžba izbrisana';
+        echo '===============' . PHP_EOL;
+
         $this->NarudzbaIzbornik();
     }
 
@@ -543,37 +590,22 @@ class Start{
         $this->placanje[]=$this->kreirajVrstaPlacanja('Kartica');
         $this->placanje[]=$this->kreirajVrstaPlacanja('Gotovina');
 
-        $this->narudzba[]=$this->kreirajNarudzba('123','30.11.2022. 15:24:36','04.12.2022. 08:14:44','30.11.2022. 15:26:36');
-        $this->narudzba[]=$this->kreirajNarudzba('124','05.12.2022. 08:11:52','08.12.2022. 09:45:12','05.12.2022. 08:13:47');
-
         $this->proizvod[]=$this->kreirajProizvod('Grafička kartica GeForce RTX 3060 Ghost LHR, 12GB GDDR6','Gainward',464.99);
         $this->proizvod[]=$this->kreirajProizvod('Grafička kartica Radeon RX6800XT Gaming OC, 16GB GDDR6','Gigabyte',1499.99);
-
-        $this->detaljinarudzbe[]=$this->kreirajDetalje(464.99,'1',0.00,'123','Grafička kartica GeForce RTX 3060 Ghost LHR, 12GB GDDR6');
-        $this->detaljinarudzbe[]=$this->kreirajDetalje(1499.99,'2',100.00,'124','Grafička kartica Radeon RX6800XT Gaming OC, 16GB GDDR6');
 
     }
 
     private function kreirajKupac($ime,$prezime,$email){
-        $o=new stdClass();
-        $o->ime=$ime;
-        $o->prezime=$prezime;
-        $o->email=$email;
-        return $o;
+        $k=new stdClass();
+        $k->ime=$ime;
+        $k->prezime=$prezime;
+        $k->email=$email;
+        return $k;
     }
 
     private function kreirajVrstaPlacanja($vrstaplacanja){
         $o=new stdClass();
         $o->vrstaplacanja=$vrstaplacanja;
-        return $o;
-    }
-
-    private function kreirajNarudzba($brojnarudzbe,$datumnarudzbe,$datumisporuke,$datumplacanja){
-        $o=new stdClass();
-        $o->brojnarudzbe=$brojnarudzbe;
-        $o->datumnarudzbe=$datumnarudzbe;
-        $o->datumisporuke=$datumisporuke;
-        $o->datumplacanja=$datumplacanja;
         return $o;
     }
 
@@ -585,15 +617,6 @@ class Start{
         return $o;
     }
 
-    private function kreirajDetalje($cijena,$kolicina,$popust,$brojnarudzbe,$proizvod){
-        $o=new stdClass();
-        $o->cijena=$cijena;
-        $o->kolicina=$kolicina;
-        $o->popust=$popust;
-        $o->brojnarudzbe=$brojnarudzbe;
-        $o->proizvod=$proizvod;
-        return $o;
-    }
 
 
 
